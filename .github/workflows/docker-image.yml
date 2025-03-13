@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub using GitHub's Docker credentials
+      uses: docker/login-action@v2
+      with:
+        username: ${{ github.actor }}   # Automatically uses GitHub username
+        password: ${{ secrets.DOCKER_TOKEN }}  # GitHub's auto-generated token
+
+    - name: Build Docker Image
+      run: docker build . -t ${{ github.actor }}/my_calc_app:latest
+
+    - name: Push Docker Image to DockerHub
+      run: docker push ${{ github.actor }}/my_calc_app:latest
+
+
